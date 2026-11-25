@@ -38,7 +38,28 @@ python3 -m http.server 8000
 
 ## 更新数据
 
-1. 修改 `data/` 下对应的 JSON 文件（数值、日期、来源）。
+### 自动更新 FRED 数据（约六成指标）
+
+先试运行，只显示会改什么，不写文件：
+
+```bash
+python3 scripts/update_fred.py --dry-run
+```
+
+确认没问题后正式运行。脚本会下载约 46 个 FRED 序列（十几秒），更新各 JSON 文件中的数值和日期、刷新走势图历史，并自动重新打包 `assets/data.js`：
+
+```bash
+python3 scripts/update_fred.py
+```
+
+只需要 Python 3 和系统自带的 `curl`，不需要 API key。运行结束后会列出：
+- 哪些数值变了（旧值 → 新值）；
+- 哪些行的说明文字里写了具体数字，需要手动改；
+- 哪些指标不来自 FRED，需要手动更新。
+
+### 手动更新其余数据
+
+1. 修改 `data/` 下对应的 JSON 文件里的 `value`、`asOf`，必要时改 `note`、`source`、`url`。同一个指标可能同时出现在 `detail.json` 和 `countries.json`，两处都要改（按 `key` 搜索）。
 2. 重新打包：
 
 ```bash
@@ -46,6 +67,14 @@ python3 scripts/build_data.py
 ```
 
 状态、阶段判断和周期温度都由页面根据数据自动计算。`data/country_view.json` 里的文字解读需要手动改写。
+
+### 发布
+
+```bash
+git add -A && git commit -m "更新数据" && git push
+```
+
+GitHub Pages 会在 1—2 分钟内自动更新网站。
 
 ## 说明与局限
 
