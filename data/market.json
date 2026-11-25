@@ -1,0 +1,62 @@
+[
+{
+"stage": 2,
+"key": "cape",
+"name": "Shiller CAPE 市盈率",
+"value": 39.4,
+"unit": "倍",
+"asOf": "2026-11",
+"warnAt": 30,
+"badAt": 35,
+"worseWhen": "above",
+"tripwire": "",
+"source": "thetrading.tools / macroradar（各家读数 37–41）",
+"url": "https://www.thetrading.tools/shiller-cape",
+"note": "历史第二高，仅次于 1999 年 12 月的 44.2"
+},
+{
+"stage": 2,
+"key": "margin_gdp",
+"name": "融资余额占 GDP",
+"value": 4.39,
+"unit": "%",
+"asOf": "2026-10",
+"warnAt": 3,
+"badAt": 4,
+"worseWhen": "above",
+"tripwire": "",
+"source": "GuruFocus（FINRA 数据）",
+"url": "https://www.gurufocus.com/economic_indicators/4266/finra-investor-margin-debt-relative-to-gdp",
+"note": "余额 1.45 万亿美元，6 月创纪录 1.50 万亿"
+},
+{
+"stage": 2,
+"key": "ai_debt_share",
+"name": "AI 资本开支中的举债比例",
+"value": 33,
+"unit": "%",
+"asOf": "2026E",
+"warnAt": 20,
+"badAt": 30,
+"worseWhen": "above",
+"tripwire": "",
+"source": "Goldman Sachs",
+"url": "https://www.goldmansachs.com/insights/goldman-sachs-exchanges/how-ai-debt-is-reshaping-the-credit-market",
+"note": "2026 年大型科技公司资本开支约 7000 亿美元；另有 SPV 与私募信贷表外融资"
+},
+{
+"stage": 4,
+"key": "ism",
+"name": "ISM 制造业 PMI",
+"value": 55.5,
+"unit": "",
+"asOf": "2026-10",
+"warnAt": 50,
+"badAt": 48,
+"worseWhen": "below",
+"tripwire": "core",
+"source": "ISM 报告",
+"url": "https://www.prnewswire.com/news-releases/manufacturing-pmi-at-55-5-october-2026-ism-manufacturing-pmi-report-302925617.html",
+"note": "新订单 55.5；低于 50 为收缩"
+}
+]

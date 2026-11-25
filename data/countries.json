@@ -1,0 +1,482 @@
+[
+{
+"country": "us",
+"metric": "credit_chg",
+"key": "us_credit_chg",
+"value": -1.9,
+"asOf": "2026 Q1",
+"source": "BIS（FRED）",
+"url": "https://fred.stlouisfed.org/series/QUSPAM770A",
+"note": "139.7%，一年前 141.6%"
+},
+{
+"country": "us",
+"metric": "credit_level",
+"key": "us_credit_level",
+"value": 139.7,
+"asOf": "2026 Q1",
+"source": "BIS（FRED）",
+"url": "https://fred.stlouisfed.org/series/QUSPAM770A",
+"note": ""
+},
+{
+"country": "us",
+"metric": "house",
+"key": "us_house",
+"value": 1.16,
+"asOf": "2026 Q2",
+"source": "BIS（FRED）",
+"url": "https://fred.stlouisfed.org/series/QUSN628BIS",
+"note": ""
+},
+{
+"country": "us",
+"metric": "policy6m",
+"key": "us_policy6m",
+"value": 0.24,
+"asOf": "2026-10",
+"source": "FRED FEDFUNDS",
+"url": "https://fred.stlouisfed.org/series/FEDFUNDS",
+"note": "9 月加息 25 个基点"
+},
+{
+"country": "us",
+"metric": "yield1y",
+"key": "us_yield1y",
+"value": 0.79,
+"asOf": "2026-11-23",
+"source": "FRED DGS10",
+"url": "https://fred.stlouisfed.org/series/DGS10",
+"note": "4.92%，一年前 4.13%"
+},
+{
+"country": "us",
+"metric": "drawdown",
+"key": "us_drawdown",
+"value": -7.4,
+"asOf": "2026-11-23",
+"source": "FRED SP500",
+"url": "https://fred.stlouisfed.org/series/SP500",
+"note": "标普 500；10 月 6 日高点 7,819"
+},
+{
+"country": "us",
+"metric": "gdp",
+"key": "us_gdp",
+"value": 2.07,
+"asOf": "2026 Q3",
+"source": "FRED GDPC1",
+"url": "https://fred.stlouisfed.org/series/GDPC1",
+"note": ""
+},
+{
+"country": "us",
+"metric": "unemp1y",
+"key": "us_unemp1y",
+"value": -0.2,
+"asOf": "2026-09",
+"source": "FRED UNRATE",
+"url": "https://fred.stlouisfed.org/series/UNRATE",
+"note": "4.2%，一年前 4.4%；2025 年 10 月数据缺失，故用 9 月"
+},
+{
+"country": "us",
+"metric": "pmi",
+"key": "us_pmi",
+"value": 55.5,
+"asOf": "2026-10",
+"source": "ISM",
+"url": "https://www.prnewswire.com/news-releases/manufacturing-pmi-at-55-5-october-2026-ism-manufacturing-pmi-report-302925617.html",
+"note": "ISM 制造业"
+},
+{
+"country": "us",
+"metric": "cli",
+"key": "us_cli",
+"value": 100.96,
+"asOf": "2026-10",
+"source": "OECD（FRED）",
+"url": "https://fred.stlouisfed.org/series/USALOLITOAASTSAM",
+"note": ""
+},
+{
+"country": "us",
+"metric": "cpi",
+"key": "us_cpi",
+"value": 3.72,
+"asOf": "2026-09",
+"source": "FRED CPIAUCSL",
+"url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+"note": "2025 年 10 月数据缺失，故用 9 月"
+},
+{
+"country": "us",
+"metric": "ppi",
+"key": "us_ppi",
+"value": 6.52,
+"asOf": "2026-10",
+"source": "FRED PPIFIS",
+"url": "https://fred.stlouisfed.org/series/PPIFIS",
+"note": "最终需求 PPI"
+},
+{
+"country": "uk",
+"metric": "credit_chg",
+"key": "uk_credit_chg",
+"value": -4.2,
+"asOf": "2026 Q1",
+"source": "BIS（FRED）",
+"url": "https://fred.stlouisfed.org/series/QGBPAM770A",
+"note": "128.4%，一年前 132.6%"
+},
+{
+"country": "uk",
+"metric": "credit_level",
+"key": "uk_credit_level",
+"value": 128.4,
+"asOf": "2026 Q1",
+"source": "BIS（FRED）",
+"url": "https://fred.stlouisfed.org/series/QGBPAM770A",
+"note": ""
+},
+{
+"country": "uk",
+"metric": "house",
+"key": "uk_house",
+"value": 2.87,
+"asOf": "2026 Q2",
+"source": "BIS（FRED）",
+"url": "https://fred.stlouisfed.org/series/QGBN628BIS",
+"note": ""
+},
+{
+"country": "uk",
+"metric": "policy6m",
+"key": "uk_policy6m",
+"value": 0.25,
+"asOf": "2026-11-05",
+"source": "英格兰银行",
+"url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026",
+"note": "3.75% → 4%，2023 年 8 月以来首次加息"
+},
+{
+"country": "uk",
+"metric": "yield1y",
+"key": "uk_yield1y",
+"value": 0.77,
+"asOf": "2026-10",
+"source": "OECD（FRED）",
+"url": "https://fred.stlouisfed.org/series/IRLTLT01GBM156N",
+"note": "5.34%，一年前 4.57%"
+},
+{
+"country": "uk",
+"metric": "drawdown",
+"key": "uk_drawdown",
+"value": -5.3,
+"asOf": "2026-11-20",
+"source": "Investing.com、InstaForex",
+"url": "https://www.investing.com/indices/uk-100-historical-data",
+"note": "富时 100；11 月 5 日收盘高点约 10,920"
+},
+{
+"country": "uk",
+"metric": "gdp",
+"key": "uk_gdp",
+"value": 1.9,
+"asOf": "2026 Q3",
+"source": "英国国家统计局（媒体转述）",
+"url": "https://www.newshub.co.uk/economy/2026/11/17/uk-real-gdp-up-07-in-third-quarter-of-2026/",
+"note": ""
+},
+{
+"country": "uk",
+"metric": "unemp1y",
+"key": "uk_unemp1y",
+"value": -0.1,
+"asOf": "2026-07",
+"source": "OECD（FRED）",
+"url": "https://fred.stlouisfed.org/series/LRHUTTTTGBM156S",
+"note": "4.7%，一年前 4.8%"
+},
+{
+"country": "uk",
+"metric": "pmi",
+"key": "uk_pmi",
+"value": 52.8,
+"asOf": "2026-10",
+"source": "S&P Global（下议院图书馆转述）",
+"url": "https://commonslibrary.parliament.uk/research-briefings/sn05206/",
+"note": "S&P Global 制造业"
+},
+{
+"country": "uk",
+"metric": "cli",
+"key": "uk_cli",
+"value": 101.43,
+"asOf": "2026-10",
+"source": "OECD（FRED）",
+"url": "https://fred.stlouisfed.org/series/GBRLOLITOAASTSAM",
+"note": ""
+},
+{
+"country": "uk",
+"metric": "cpi",
+"key": "uk_cpi",
+"value": 3.6,
+"asOf": "2026-10",
+"source": "英国下议院图书馆",
+"url": "https://commonslibrary.parliament.uk/research-briefings/sn02792/",
+"note": "有一家网站报 2.8%，与其他来源不符"
+},
+{
+"country": "uk",
+"metric": "ppi",
+"key": "uk_ppi",
+"value": null,
+"asOf": "—",
+"source": "未找到",
+"url": "",
+"note": "没找到 10 月英国 PPI"
+},
+{
+"country": "jp",
+"metric": "credit_chg",
+"key": "jp_credit_chg",
+"value": 2.7,
+"asOf": "2026 Q1",
+"source": "BIS（FRED）",
+"url": "https://fred.stlouisfed.org/series/QJPPAM770A",
+"note": "173.7%，一年前 171.0%"
+},
+{
+"country": "jp",
+"metric": "credit_level",
+"key": "jp_credit_level",
+"value": 173.7,
+"asOf": "2026 Q1",
+"source": "BIS（FRED）",
+"url": "https://fred.stlouisfed.org/series/QJPPAM770A",
+"note": ""
+},
+{
+"country": "jp",
+"metric": "house",
+"key": "jp_house",
+"value": 5.04,
+"asOf": "2025 Q4",
+"source": "BIS（FRED）",
+"url": "https://fred.stlouisfed.org/series/QJPN628BIS",
+"note": "数据较旧"
+},
+{
+"country": "jp",
+"metric": "policy6m",
+"key": "jp_policy6m",
+"value": 0.5,
+"asOf": "2026-10",
+"source": "OECD（FRED）",
+"url": "https://fred.stlouisfed.org/series/IRSTCI01JPM156N",
+"note": "10 月加息至 1.25%，31 年来最高"
+},
+{
+"country": "jp",
+"metric": "yield1y",
+"key": "jp_yield1y",
+"value": 1.1,
+"asOf": "2026-10",
+"source": "OECD（FRED）",
+"url": "https://fred.stlouisfed.org/series/IRLTLT01JPM156N",
+"note": "2.76%，一年前 1.66%"
+},
+{
+"country": "jp",
+"metric": "drawdown",
+"key": "jp_drawdown",
+"value": -22.0,
+"asOf": "2026-11-20",
+"source": "FRED NIKKEI225",
+"url": "https://fred.stlouisfed.org/series/NIKKEI225",
+"note": "日经 225；6 月 25 日高点 72,366"
+},
+{
+"country": "jp",
+"metric": "gdp",
+"key": "jp_gdp",
+"value": 1.16,
+"asOf": "2026 Q3",
+"source": "FRED JPNRGDPEXP",
+"url": "https://fred.stlouisfed.org/series/JPNRGDPEXP",
+"note": "环比年化 −0.1%"
+},
+{
+"country": "jp",
+"metric": "unemp1y",
+"key": "jp_unemp1y",
+"value": -0.2,
+"asOf": "2026-09",
+"source": "OECD（FRED）",
+"url": "https://fred.stlouisfed.org/series/LRHUTTTTJPM156S",
+"note": "2.4%，一年前 2.6%"
+},
+{
+"country": "jp",
+"metric": "pmi",
+"key": "jp_pmi",
+"value": 54.1,
+"asOf": "2026-09",
+"source": "S&P Global（TrendForce 转述）",
+"url": "https://datatrack.trendforce.com/Chart/content/2696/japan-manufacturing-pmi-final-sa",
+"note": "S&P Global 制造业；10 月数据未确认"
+},
+{
+"country": "jp",
+"metric": "cli",
+"key": "jp_cli",
+"value": 100.21,
+"asOf": "2026-10",
+"source": "OECD（FRED）",
+"url": "https://fred.stlouisfed.org/series/JPNLOLITOAASTSAM",
+"note": ""
+},
+{
+"country": "jp",
+"metric": "cpi",
+"key": "jp_cpi",
+"value": 2.3,
+"asOf": "2026-10",
+"source": "日本时报、彭博",
+"url": "https://www.japantimes.co.jp/business/2026/11/20/economy/cpi-up-boj-rate-hike/",
+"note": "核心 CPI 2.2%"
+},
+{
+"country": "jp",
+"metric": "ppi",
+"key": "jp_ppi",
+"value": 6.8,
+"asOf": "2026-10",
+"source": "MetaTrader 转述日本银行数据",
+"url": "https://www.metatrader.com/en/markets/world-economy/japan",
+"note": "企业商品价格指数（CGPI）；待日本银行原始数据核实"
+},
+{
+"country": "cn",
+"metric": "credit_chg",
+"key": "cn_credit_chg",
+"value": 2.2,
+"asOf": "2026 Q1",
+"source": "BIS（FRED）",
+"url": "https://fred.stlouisfed.org/series/QCNPAM770A",
+"note": "204.1%，一年前 201.9%"
+},
+{
+"country": "cn",
+"metric": "credit_level",
+"key": "cn_credit_level",
+"value": 204.1,
+"asOf": "2026 Q1",
+"source": "BIS（FRED）",
+"url": "https://fred.stlouisfed.org/series/QCNPAM770A",
+"note": ""
+},
+{
+"country": "cn",
+"metric": "house",
+"key": "cn_house",
+"value": -5.9,
+"asOf": "2026 Q2",
+"source": "BIS（FRED）",
+"url": "https://fred.stlouisfed.org/series/QCNN628BIS",
+"note": "统计局 70 城新房 10 月同比 −2.4%"
+},
+{
+"country": "cn",
+"metric": "policy6m",
+"key": "cn_policy6m",
+"value": 0.0,
+"asOf": "2026-11",
+"source": "人民银行（媒体转述）",
+"url": "https://www.briefs.co/news/pboc-names-new-policy-rate-shifts-anchor-to-overnight-revers/",
+"note": "11 月起改用隔夜利率 1.25% 为政策利率，官方称不是降息"
+},
+{
+"country": "cn",
+"metric": "yield1y",
+"key": "cn_yield1y",
+"value": -0.25,
+"asOf": "2026-11-20",
+"source": "中债收益率曲线；Trading Economics",
+"url": "https://yield.chinabond.com.cn/cbweb-czb-web/czb/moreInfo?locale=en_US&nameType=1",
+"note": "1.58%，一年前约 1.83%，创历史新低"
+},
+{
+"country": "cn",
+"metric": "drawdown",
+"key": "cn_drawdown",
+"value": -22.9,
+"asOf": "2026-11-20",
+"source": "Investing.com、Longbridge",
+"url": "https://www.investing.com/indices/csi300-historical-data",
+"note": "沪深 300；一年内高点约 5,064"
+},
+{
+"country": "cn",
+"metric": "gdp",
+"key": "cn_gdp",
+"value": 4.5,
+"asOf": "2026 Q3",
+"source": "国家统计局",
+"url": "https://english.news.cn/20261019/89cd3cbf51d94ed7bc3156fa7c628667/c.html",
+"note": ""
+},
+{
+"country": "cn",
+"metric": "unemp1y",
+"key": "cn_unemp1y",
+"value": 0.0,
+"asOf": "2026-10",
+"source": "国家统计局",
+"url": "https://english.news.cn/20261116/92d5aecfe5f9488eb6d25917860f592e/c.html",
+"note": "城镇调查失业率 5.1%，与一年前持平"
+},
+{
+"country": "cn",
+"metric": "pmi",
+"key": "cn_pmi",
+"value": 49.3,
+"asOf": "2026-10",
+"source": "媒体报道（仅一个来源）",
+"url": "https://www.china-briefing.com/news/how-did-chinas-economy-perform-in-october-2026/",
+"note": "国家统计局官方制造业 PMI"
+},
+{
+"country": "cn",
+"metric": "cli",
+"key": "cn_cli",
+"value": 97.13,
+"asOf": "2026-10",
+"source": "OECD（FRED）",
+"url": "https://fred.stlouisfed.org/series/CHNLOLITOAASTSAM",
+"note": ""
+},
+{
+"country": "cn",
+"metric": "cpi",
+"key": "cn_cpi",
+"value": 0.7,
+"asOf": "2026-10",
+"source": "国家统计局（CNBC 转述）",
+"url": "https://www.cnbc.com/2026/11/09/china-wholesale-inflation-rises-consumer.html",
+"note": ""
+},
+{
+"country": "cn",
+"metric": "ppi",
+"key": "cn_ppi",
+"value": 5.7,
+"asOf": "2026-10",
+"source": "国家统计局（CNBC 转述）",
+"url": "https://www.cnbc.com/2026/11/09/china-wholesale-inflation-rises-consumer.html",
+"note": "2022 年 6 月以来最高"
+}
+]

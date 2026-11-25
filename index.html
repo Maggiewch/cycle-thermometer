@@ -1,0 +1,1003 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>周期温度计</title>
+<meta name="description" content="用罗斯巴德《美国大萧条》的奥地利学派周期框架，以同一套指标和判断规则研究美国、英国、日本、中国所处的经济周期阶段。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&family=Noto+Serif+SC:wght@400&display=swap">
+<style>
+  :root {
+    --color-bg: #f6f6f3; --color-panel: #ffffff; --color-fg: #1d1d1b; --color-fg-muted: #67665f;
+    --color-border-line: #e2e0d9; --color-ok: #2c8556; --color-warn: #b8740f; --color-bad: #c03d2c;
+    --series-1: #2f6fdb; --series-2: #d9822b; --series-3: #3a9e6a; --series-4: #8a5cc7;
+    --font-anthropic-sans: "Noto Sans SC", -apple-system, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    --font-anthropic-serif: "Noto Serif SC", "Songti SC", "SimSun", Georgia, serif;
+    --cds-font-size-caption: 12px; --cds-font-size-body: 14px; --cds-font-size-heading: 18px; --cds-font-size-title: 30px;
+    --cds-font-weight-medium: 500;
+    --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 12px; --cds-gap-lg: 16px; --cds-gap-xl: 32px;
+    --cds-pad-xs: 4px; --cds-pad-sm: 8px; --cds-pad-md: 12px; --cds-pad-lg: 16px;
+    --cds-radius: 10px;
+    --cds-text-secondary: var(--color-fg-muted); --cds-surface-popover: var(--color-panel); --cds-border: var(--color-border-line);
+    --cds-shadow-popover: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --cds-chart-grid: color-mix(in srgb, var(--color-fg) 8%, transparent);
+    --cds-chart-axis: color-mix(in srgb, var(--color-fg) 22%, transparent);
+    --cds-chart-reference: color-mix(in srgb, var(--color-fg) 45%, transparent);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-bg: #151514; --color-panel: #1f1f1d; --color-fg: #ecebe6; --color-fg-muted: #a5a39b;
+      --color-border-line: #363530; --color-ok: #52b984; --color-warn: #e1a13c; --color-bad: #e96b5b;
+      --series-1: #6f9ff2; --series-2: #efa55e; --series-3: #5fc28d; --series-4: #ab8be2;
+      --cds-shadow-popover: 0 4px 16px rgba(0, 0, 0, 0.5);
+      color-scheme: dark;
+    }
+  }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); font-size: 14px; line-height: 1.5; }
+  #dash-root { display: flex; justify-content: center; padding-block: 32px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  #dash-root > .cyc { width: 100%; }
+  [hidden] { display: none !important; }
+  button { font: inherit; }
+</style>
+<style>
+  .cyc { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: flex; flex-direction: column; gap: var(--cds-gap-xl); max-width: 1180px; }
+  .cyc h1, .cyc h2, .cyc h3, .cyc p { margin: 0; }
+  .cyc-head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+  .cyc-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); text-wrap: balance; }
+  .cyc-sub { color: var(--color-fg-muted); font-size: var(--cds-font-size-body); max-width: 68ch; line-height: 1.6; }
+  .cyc-eyebrow { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: 0.06em; }
+  .cyc-also { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); }
+  .cyc-link { all: unset; cursor: pointer; color: var(--color-fg); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--color-border-line); }
+  .cyc-link:hover { text-decoration-color: var(--color-fg); }
+  .cyc-link:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; border-radius: 2px; }
+
+  .cyc-lv0 { --lv: var(--color-ok); }
+  .cyc-lv1 { --lv: var(--color-warn); }
+  .cyc-lv2 { --lv: var(--color-bad); }
+  .cyc-lvna { --lv: var(--color-border-line); }
+  .cyc-dots { display: flex; flex-wrap: wrap; gap: 4px; min-height: 12px; }
+  .cyc-dot { width: 12px; height: 12px; border-radius: 3px; background: var(--lv); }
+  .cyc-pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: var(--cds-font-size-caption); font-weight: var(--cds-font-weight-medium); color: var(--lv); background: color-mix(in srgb, var(--lv) 14%, transparent); white-space: nowrap; }
+  .cyc-fail { color: var(--color-bad); font-size: var(--cds-font-size-body); }
+  .cyc-note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.5; }
+
+  .cyc-sec { display: flex; flex-direction: column; gap: var(--cds-gap-md); scroll-margin-top: 16px; }
+  .cyc-sec-h { display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+  .cyc-sec-h h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+  .cyc-sec-h p { color: var(--color-fg-muted); max-width: 68ch; line-height: 1.6; }
+
+  .cyc-peers { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--cds-gap-md); }
+  .cyc-peer { display: flex; flex-direction: column; gap: var(--cds-gap-sm); padding: var(--cds-pad-lg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); min-width: 0; }
+  .cyc-peer h3 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-heading); }
+  .cyc-peer-h { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); }
+  .cyc-thermo { display: flex; flex-direction: column; gap: 6px; }
+  .cyc-thermo-top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--cds-gap-sm); }
+  .cyc-thermo-k { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cyc-thermo-v { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; line-height: 1; }
+  .cyc-thermo-bar { position: relative; height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--color-fg) 8%, transparent); overflow: hidden; }
+  .cyc-thermo-fill { height: 100%; border-radius: 999px; background: var(--lv); }
+  .cyc-thermo-scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+  .cyc-pst-k { order: 0; }
+  .cyc-pst-t { order: 1; }
+  .cyc-pst .cyc-dots { order: 2; }
+  .cyc-pst-t { font-size: 11px; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+  .cyc-pst-t b { color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+  .cyc-verdict { font-size: var(--cds-font-size-body); line-height: 1.6; }
+  .cyc-vtag { display: inline-block; margin-right: 6px; padding: 1px 8px; border-radius: 999px; font-size: var(--cds-font-size-caption); font-weight: var(--cds-font-weight-medium); background: color-mix(in srgb, var(--color-fg) 8%, transparent); }
+  .cyc-counts { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; line-height: 1.6; }
+  .cyc-counts b { color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+  .cyc-pstages { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .cyc-pst { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .cyc-pst-k { font-size: 11px; color: var(--color-fg-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cyc-interp { margin-top: auto; display: flex; flex-direction: column; gap: 4px; padding-top: var(--cds-pad-sm); border-top: 1px solid var(--color-border-line); }
+  .cyc-csum { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.6; }
+
+  .cyc-tw-wrap { overflow-x: auto; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+  .cyc-tw { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 560px; }
+  .cyc-tw th, .cyc-tw td { text-align: left; padding: var(--cds-pad-sm) var(--cds-pad-md); border-bottom: 1px solid var(--color-border-line); }
+  .cyc-tw th { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+  .cyc-tw tbody tr:last-child td { border-bottom: 0; }
+  .cyc-tw td.cyc-num, .cyc-tw th.cyc-num { text-align: right; }
+
+  .cyc-mx { min-width: 720px; table-layout: fixed; }
+  .cyc-mx th:first-child, .cyc-mx td:first-child { width: 26%; }
+  .cyc-mx td, .cyc-mx th { vertical-align: top; }
+  .cyc-mx .cyc-mx-g td { background: color-mix(in srgb, var(--color-fg) 4%, transparent); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); letter-spacing: 0.04em; padding-block: 6px; }
+  .cyc-mx-name { font-weight: var(--cds-font-weight-medium); display: block; }
+  .cyc-mx-rule { display: block; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-top: 2px; line-height: 1.4; }
+  .cyc-mx-cell { display: flex; flex-direction: column; gap: 3px; border-left: 3px solid var(--lv); padding-left: 8px; }
+  .cyc-mx-top { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+  .cyc-mx-v { font-variant-numeric: tabular-nums; font-weight: var(--cds-font-weight-medium); }
+  .cyc-mx-d { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+  .cyc-srcs summary { cursor: pointer; font-size: var(--cds-font-size-body); }
+  .cyc-srcs ul { margin: var(--cds-gap-sm) 0 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.5; }
+  .cyc-srcs a { color: var(--color-fg-muted); }
+
+  .cyc-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border: 1px solid var(--color-border-line); border-radius: calc(var(--cds-radius) + 4px); background: var(--color-panel); align-self: flex-start; max-width: 100%; }
+  .cyc-tab { all: unset; cursor: pointer; padding: 6px 16px; border-radius: var(--cds-radius); font-size: var(--cds-font-size-body); color: var(--color-fg-muted); }
+  .cyc-tab:hover { color: var(--color-fg); }
+  .cyc-tab[aria-selected="true"] { background: var(--color-bg); color: var(--color-fg); font-weight: var(--cds-font-weight-medium); box-shadow: 0 0 0 1px var(--color-border-line); }
+  .cyc-tab:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .cyc-dverdict { font-size: var(--cds-font-size-body); line-height: 1.6; max-width: 72ch; }
+
+  .cyc-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--cds-gap-sm); }
+  .cyc-step { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; gap: var(--cds-gap-xs); padding: var(--cds-pad-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); min-width: 0; }
+  .cyc-step:hover { border-color: var(--color-fg-muted); }
+  .cyc-step:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .cyc-step-k { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: 0.04em; }
+  .cyc-step-t { font-weight: var(--cds-font-weight-medium); }
+  .cyc-step-ctx { background: transparent; border-style: dashed; }
+  .cyc-step-c { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; min-height: 1.2em; }
+
+  .cyc-block { display: flex; flex-direction: column; gap: var(--cds-gap-sm); scroll-margin-top: 16px; }
+  .cyc-block h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); }
+  .cyc-block > p { color: var(--color-fg-muted); max-width: 68ch; line-height: 1.6; font-size: var(--cds-font-size-body); }
+  .cyc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: var(--cds-gap-md); min-height: 140px; }
+  .cyc-card { position: relative; display: flex; flex-direction: column; gap: var(--cds-gap-xs); padding: var(--cds-pad-lg); background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); min-width: 0; }
+  .cyc-card::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 0 2px 2px 0; background: var(--lv); }
+  .cyc-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--cds-gap-sm); }
+  .cyc-card-name { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); line-height: 1.4; }
+  .cyc-card-val { display: flex; align-items: baseline; gap: 6px; }
+  .cyc-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+  .cyc-unit { color: var(--color-fg-muted); font-size: var(--cds-font-size-body); }
+  .cyc-asof { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); margin-left: auto; font-variant-numeric: tabular-nums; }
+  .cyc-line { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+  .cyc-code { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cyc-code a { color: var(--color-fg-muted); }
+  .cyc-spark { position: relative; height: 70px; margin-top: var(--cds-gap-xs); }
+  .cyc-spark svg { display: block; width: 100%; height: 56px; overflow: visible; }
+  .cyc-spark-ax { display: flex; justify-content: space-between; font-size: var(--cds-font-size-caption); color: var(--cds-text-secondary); font-variant-numeric: tabular-nums; }
+  .cyc-tip { position: absolute; top: -30px; transform: translateX(-50%); padding: 2px 8px; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: 6px; font-size: var(--cds-font-size-caption); white-space: nowrap; pointer-events: none; font-variant-numeric: tabular-nums; }
+
+  .cyc-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--cds-gap-md); }
+  .cyc-tile { display: flex; flex-direction: column; gap: var(--cds-gap-xs); padding: var(--cds-pad-md) var(--cds-pad-lg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); min-width: 0; }
+  .cyc-tile-k { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cyc-tile-v { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; color: var(--color-bad); }
+  .cyc-tile-s { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+  .cyc-chart-card { padding: var(--cds-pad-lg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+  .cyc-chart-card h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); }
+  .cyc-chart { position: relative; min-height: 280px; }
+  .cyc-chart svg { display: block; overflow: visible; }
+  .cyc-chart .tick text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+  .cyc-chart .domain, .cyc-chart .tick line { stroke: var(--cds-chart-axis); }
+  .cyc-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cyc-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .cyc-legend i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+  .cyc-tip2 { position: absolute; top: 8px; padding: var(--cds-pad-xs) var(--cds-pad-sm); background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: 6px; font-size: var(--cds-font-size-caption); pointer-events: none; font-variant-numeric: tabular-nums; display: flex; flex-direction: column; gap: 2px; white-space: nowrap; }
+  .cyc-era { min-width: 760px; }
+  .cyc-era td { vertical-align: top; line-height: 1.5; font-size: var(--cds-font-size-body); }
+  .cyc-era td:first-child { font-weight: var(--cds-font-weight-medium); white-space: nowrap; }
+  .cyc-src { display: block; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-weight: 400; margin-top: 2px; }
+
+  .cyc-foot { display: flex; flex-direction: column; gap: var(--cds-gap-sm); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.6; border-top: 1px solid var(--color-border-line); padding-top: var(--cds-pad-lg); }
+  .cyc-foot details summary { cursor: pointer; color: var(--color-fg); }
+  .cyc-foot ul { margin: var(--cds-gap-xs) 0 0; padding-left: 1.2em; }
+</style>
+</head>
+<body>
+<main id="dash-root">
+<div class="cyc" lang="zh-CN" data-read>
+  <header class="cyc-head" id="cyc-head">
+    <span class="cyc-eyebrow">美国 · 英国 · 日本 · 中国 · 罗斯巴德《美国大萧条》周期框架</span>
+    <h1 class="cyc-title">周期温度计</h1>
+    <p class="cyc-sub">用奥地利学派的“信贷扩张 → 不当投资 → 拐点 → 萧条”框架，以同一套方法、同一条判断规则研究四个经济体。</p>
+    <p class="cyc-also">跳到：<button class="cyc-link" type="button" data-go="verdicts">四国判断</button>·<button class="cyc-link" type="button" data-go="peers">共同指标对比</button>·<button class="cyc-link" type="button" data-go="detail">逐项细看</button>·<button class="cyc-link" type="button" data-go="era">与 1929—1933 年对比</button></p>
+  </header>
+
+  <section class="cyc-sec" id="verdicts">
+    <div class="cyc-sec-h">
+      <span class="cyc-eyebrow">判断</span>
+      <h2>四国现在处在周期的哪一步</h2>
+      <p>每个国家都用同一条规则，从它自己的逐项指标得出阶段；下方的“Claude 的解读”是对数字的文字说明。</p>
+    </div>
+    <div class="cyc-peers">
+      <article class="cyc-peer" id="peer-us">
+        <div class="cyc-peer-h"><h3>美国</h3></div>
+        <div class="cyc-thermo">
+          <div class="cyc-thermo-top"><span class="cyc-thermo-k">周期温度</span><span class="cyc-thermo-v"><span data-draw="tv" data-country="us" data-stage="0" data-source="dtemp" data-field="temp" data-where="key=us-0">—</span>°</span></div>
+          <div class="cyc-thermo-bar" data-draw="tbar" data-country="us" data-source="dtemp" role="img" aria-label="美国周期温度，满格为 100 度"></div>
+          <div class="cyc-thermo-scale"><span>0°</span><span>50°</span><span>100°</span></div>
+        </div>
+        <span data-draw="vphase" data-country="us"></span>
+        <p class="cyc-verdict" data-vc="us" data-phase="contraction" hidden><span class="cyc-vtag">收缩</span>多个核心触发器和实体经济指标同时亮灯：收缩已经开始，处在罗斯巴德所说的清算期。</p>
+        <p class="cyc-verdict" data-vc="us" data-phase="turning" hidden><span class="cyc-vtag">拐点</span>已有核心触发器越过触发线：信贷扩张正在停止，处在“危机到来”的拐点。</p>
+        <p class="cyc-verdict" data-vc="us" data-phase="late-boom" hidden><span class="cyc-vtag">繁荣后期</span>信贷仍在扩张，核心触发器还没有亮灯：处在繁荣后期。</p>
+        <p class="cyc-verdict" data-vc="us" data-phase="tightening" hidden><span class="cyc-vtag">收紧中</span>央行和债市在收紧，但信贷没有过度扩张、实体经济还稳：更像通胀驱动的收紧，而不是泡沫破裂。</p>
+        <p class="cyc-verdict" data-vc="us" data-phase="calm" hidden><span class="cyc-vtag">平稳</span>信贷与资产信号大多正常，看不到明显的繁荣—萧条迹象。</p>
+        <p class="cyc-counts">共 <b data-draw="vs" data-country="us" data-k="total" data-source="dsum" data-field="total" data-where="country=us">—</b> 项指标：危险 <b data-draw="vs" data-country="us" data-k="bad" data-source="dsum" data-field="bad" data-where="country=us">—</b> · 警惕 <b data-draw="vs" data-country="us" data-k="warn" data-source="dsum" data-field="warn" data-where="country=us">—</b>；核心触发器越线 <b data-draw="vs" data-country="us" data-k="tripped" data-source="dsum" data-field="tripped" data-where="country=us">—</b> / <b data-draw="vs" data-country="us" data-k="coreTotal" data-source="dsum" data-field="coreTotal" data-where="country=us">—</b></p>
+        <div class="cyc-pstages"><div class="cyc-pst"><span class="cyc-pst-k">信贷扩张</span><span class="cyc-dots" data-draw="vdots" data-country="us" data-stage="1" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="us" data-stage="1" data-source="dtemp" data-field="temp" data-where="key=us-1">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">不当投资</span><span class="cyc-dots" data-draw="vdots" data-country="us" data-stage="2" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="us" data-stage="2" data-source="dtemp" data-field="temp" data-where="key=us-2">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">拐点信号</span><span class="cyc-dots" data-draw="vdots" data-country="us" data-stage="3" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="us" data-stage="3" data-source="dtemp" data-field="temp" data-where="key=us-3">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">实体经济</span><span class="cyc-dots" data-draw="vdots" data-country="us" data-stage="4" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="us" data-stage="4" data-source="dtemp" data-field="temp" data-where="key=us-4">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">通胀</span><span class="cyc-dots" data-draw="vdots" data-country="us" data-stage="5" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="us" data-stage="5" data-source="dtemp" data-field="temp" data-where="key=us-5">—</b>°</span></div></div>
+        <div class="cyc-interp">
+          <span class="cyc-eyebrow">Claude 的解读 · <span data-draw="pphase" data-country="us" data-source="country_view" data-field="phase" data-where="country=us">—</span></span>
+          <p class="cyc-csum" data-draw="psum" data-country="us" data-source="country_view" data-field="summary" data-where="country=us">—</p>
+          <button class="cyc-link" type="button" data-detail="us">逐项细看美国 →</button>
+        </div>
+      </article>
+      <article class="cyc-peer" id="peer-uk">
+        <div class="cyc-peer-h"><h3>英国</h3></div>
+        <div class="cyc-thermo">
+          <div class="cyc-thermo-top"><span class="cyc-thermo-k">周期温度</span><span class="cyc-thermo-v"><span data-draw="tv" data-country="uk" data-stage="0" data-source="dtemp" data-field="temp" data-where="key=uk-0">—</span>°</span></div>
+          <div class="cyc-thermo-bar" data-draw="tbar" data-country="uk" data-source="dtemp" role="img" aria-label="英国周期温度，满格为 100 度"></div>
+          <div class="cyc-thermo-scale"><span>0°</span><span>50°</span><span>100°</span></div>
+        </div>
+        <span data-draw="vphase" data-country="uk"></span>
+        <p class="cyc-verdict" data-vc="uk" data-phase="contraction" hidden><span class="cyc-vtag">收缩</span>多个核心触发器和实体经济指标同时亮灯：收缩已经开始，处在罗斯巴德所说的清算期。</p>
+        <p class="cyc-verdict" data-vc="uk" data-phase="turning" hidden><span class="cyc-vtag">拐点</span>已有核心触发器越过触发线：信贷扩张正在停止，处在“危机到来”的拐点。</p>
+        <p class="cyc-verdict" data-vc="uk" data-phase="late-boom" hidden><span class="cyc-vtag">繁荣后期</span>信贷仍在扩张，核心触发器还没有亮灯：处在繁荣后期。</p>
+        <p class="cyc-verdict" data-vc="uk" data-phase="tightening" hidden><span class="cyc-vtag">收紧中</span>央行和债市在收紧，但信贷没有过度扩张、实体经济还稳：更像通胀驱动的收紧，而不是泡沫破裂。</p>
+        <p class="cyc-verdict" data-vc="uk" data-phase="calm" hidden><span class="cyc-vtag">平稳</span>信贷与资产信号大多正常，看不到明显的繁荣—萧条迹象。</p>
+        <p class="cyc-counts">共 <b data-draw="vs" data-country="uk" data-k="total" data-source="dsum" data-field="total" data-where="country=uk">—</b> 项指标：危险 <b data-draw="vs" data-country="uk" data-k="bad" data-source="dsum" data-field="bad" data-where="country=uk">—</b> · 警惕 <b data-draw="vs" data-country="uk" data-k="warn" data-source="dsum" data-field="warn" data-where="country=uk">—</b>；核心触发器越线 <b data-draw="vs" data-country="uk" data-k="tripped" data-source="dsum" data-field="tripped" data-where="country=uk">—</b> / <b data-draw="vs" data-country="uk" data-k="coreTotal" data-source="dsum" data-field="coreTotal" data-where="country=uk">—</b></p>
+        <div class="cyc-pstages"><div class="cyc-pst"><span class="cyc-pst-k">信贷扩张</span><span class="cyc-dots" data-draw="vdots" data-country="uk" data-stage="1" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="uk" data-stage="1" data-source="dtemp" data-field="temp" data-where="key=uk-1">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">不当投资</span><span class="cyc-dots" data-draw="vdots" data-country="uk" data-stage="2" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="uk" data-stage="2" data-source="dtemp" data-field="temp" data-where="key=uk-2">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">拐点信号</span><span class="cyc-dots" data-draw="vdots" data-country="uk" data-stage="3" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="uk" data-stage="3" data-source="dtemp" data-field="temp" data-where="key=uk-3">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">实体经济</span><span class="cyc-dots" data-draw="vdots" data-country="uk" data-stage="4" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="uk" data-stage="4" data-source="dtemp" data-field="temp" data-where="key=uk-4">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">通胀</span><span class="cyc-dots" data-draw="vdots" data-country="uk" data-stage="5" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="uk" data-stage="5" data-source="dtemp" data-field="temp" data-where="key=uk-5">—</b>°</span></div></div>
+        <div class="cyc-interp">
+          <span class="cyc-eyebrow">Claude 的解读 · <span data-draw="pphase" data-country="uk" data-source="country_view" data-field="phase" data-where="country=uk">—</span></span>
+          <p class="cyc-csum" data-draw="psum" data-country="uk" data-source="country_view" data-field="summary" data-where="country=uk">—</p>
+          <button class="cyc-link" type="button" data-detail="uk">逐项细看英国 →</button>
+        </div>
+      </article>
+      <article class="cyc-peer" id="peer-jp">
+        <div class="cyc-peer-h"><h3>日本</h3></div>
+        <div class="cyc-thermo">
+          <div class="cyc-thermo-top"><span class="cyc-thermo-k">周期温度</span><span class="cyc-thermo-v"><span data-draw="tv" data-country="jp" data-stage="0" data-source="dtemp" data-field="temp" data-where="key=jp-0">—</span>°</span></div>
+          <div class="cyc-thermo-bar" data-draw="tbar" data-country="jp" data-source="dtemp" role="img" aria-label="日本周期温度，满格为 100 度"></div>
+          <div class="cyc-thermo-scale"><span>0°</span><span>50°</span><span>100°</span></div>
+        </div>
+        <span data-draw="vphase" data-country="jp"></span>
+        <p class="cyc-verdict" data-vc="jp" data-phase="contraction" hidden><span class="cyc-vtag">收缩</span>多个核心触发器和实体经济指标同时亮灯：收缩已经开始，处在罗斯巴德所说的清算期。</p>
+        <p class="cyc-verdict" data-vc="jp" data-phase="turning" hidden><span class="cyc-vtag">拐点</span>已有核心触发器越过触发线：信贷扩张正在停止，处在“危机到来”的拐点。</p>
+        <p class="cyc-verdict" data-vc="jp" data-phase="late-boom" hidden><span class="cyc-vtag">繁荣后期</span>信贷仍在扩张，核心触发器还没有亮灯：处在繁荣后期。</p>
+        <p class="cyc-verdict" data-vc="jp" data-phase="tightening" hidden><span class="cyc-vtag">收紧中</span>央行和债市在收紧，但信贷没有过度扩张、实体经济还稳：更像通胀驱动的收紧，而不是泡沫破裂。</p>
+        <p class="cyc-verdict" data-vc="jp" data-phase="calm" hidden><span class="cyc-vtag">平稳</span>信贷与资产信号大多正常，看不到明显的繁荣—萧条迹象。</p>
+        <p class="cyc-counts">共 <b data-draw="vs" data-country="jp" data-k="total" data-source="dsum" data-field="total" data-where="country=jp">—</b> 项指标：危险 <b data-draw="vs" data-country="jp" data-k="bad" data-source="dsum" data-field="bad" data-where="country=jp">—</b> · 警惕 <b data-draw="vs" data-country="jp" data-k="warn" data-source="dsum" data-field="warn" data-where="country=jp">—</b>；核心触发器越线 <b data-draw="vs" data-country="jp" data-k="tripped" data-source="dsum" data-field="tripped" data-where="country=jp">—</b> / <b data-draw="vs" data-country="jp" data-k="coreTotal" data-source="dsum" data-field="coreTotal" data-where="country=jp">—</b></p>
+        <div class="cyc-pstages"><div class="cyc-pst"><span class="cyc-pst-k">信贷扩张</span><span class="cyc-dots" data-draw="vdots" data-country="jp" data-stage="1" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="jp" data-stage="1" data-source="dtemp" data-field="temp" data-where="key=jp-1">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">不当投资</span><span class="cyc-dots" data-draw="vdots" data-country="jp" data-stage="2" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="jp" data-stage="2" data-source="dtemp" data-field="temp" data-where="key=jp-2">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">拐点信号</span><span class="cyc-dots" data-draw="vdots" data-country="jp" data-stage="3" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="jp" data-stage="3" data-source="dtemp" data-field="temp" data-where="key=jp-3">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">实体经济</span><span class="cyc-dots" data-draw="vdots" data-country="jp" data-stage="4" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="jp" data-stage="4" data-source="dtemp" data-field="temp" data-where="key=jp-4">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">通胀</span><span class="cyc-dots" data-draw="vdots" data-country="jp" data-stage="5" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="jp" data-stage="5" data-source="dtemp" data-field="temp" data-where="key=jp-5">—</b>°</span></div></div>
+        <div class="cyc-interp">
+          <span class="cyc-eyebrow">Claude 的解读 · <span data-draw="pphase" data-country="jp" data-source="country_view" data-field="phase" data-where="country=jp">—</span></span>
+          <p class="cyc-csum" data-draw="psum" data-country="jp" data-source="country_view" data-field="summary" data-where="country=jp">—</p>
+          <button class="cyc-link" type="button" data-detail="jp">逐项细看日本 →</button>
+        </div>
+      </article>
+      <article class="cyc-peer" id="peer-cn">
+        <div class="cyc-peer-h"><h3>中国</h3></div>
+        <div class="cyc-thermo">
+          <div class="cyc-thermo-top"><span class="cyc-thermo-k">周期温度</span><span class="cyc-thermo-v"><span data-draw="tv" data-country="cn" data-stage="0" data-source="dtemp" data-field="temp" data-where="key=cn-0">—</span>°</span></div>
+          <div class="cyc-thermo-bar" data-draw="tbar" data-country="cn" data-source="dtemp" role="img" aria-label="中国周期温度，满格为 100 度"></div>
+          <div class="cyc-thermo-scale"><span>0°</span><span>50°</span><span>100°</span></div>
+        </div>
+        <span data-draw="vphase" data-country="cn"></span>
+        <p class="cyc-verdict" data-vc="cn" data-phase="contraction" hidden><span class="cyc-vtag">收缩</span>多个核心触发器和实体经济指标同时亮灯：收缩已经开始，处在罗斯巴德所说的清算期。</p>
+        <p class="cyc-verdict" data-vc="cn" data-phase="turning" hidden><span class="cyc-vtag">拐点</span>已有核心触发器越过触发线：信贷扩张正在停止，处在“危机到来”的拐点。</p>
+        <p class="cyc-verdict" data-vc="cn" data-phase="late-boom" hidden><span class="cyc-vtag">繁荣后期</span>信贷仍在扩张，核心触发器还没有亮灯：处在繁荣后期。</p>
+        <p class="cyc-verdict" data-vc="cn" data-phase="tightening" hidden><span class="cyc-vtag">收紧中</span>央行和债市在收紧，但信贷没有过度扩张、实体经济还稳：更像通胀驱动的收紧，而不是泡沫破裂。</p>
+        <p class="cyc-verdict" data-vc="cn" data-phase="calm" hidden><span class="cyc-vtag">平稳</span>信贷与资产信号大多正常，看不到明显的繁荣—萧条迹象。</p>
+        <p class="cyc-counts">共 <b data-draw="vs" data-country="cn" data-k="total" data-source="dsum" data-field="total" data-where="country=cn">—</b> 项指标：危险 <b data-draw="vs" data-country="cn" data-k="bad" data-source="dsum" data-field="bad" data-where="country=cn">—</b> · 警惕 <b data-draw="vs" data-country="cn" data-k="warn" data-source="dsum" data-field="warn" data-where="country=cn">—</b>；核心触发器越线 <b data-draw="vs" data-country="cn" data-k="tripped" data-source="dsum" data-field="tripped" data-where="country=cn">—</b> / <b data-draw="vs" data-country="cn" data-k="coreTotal" data-source="dsum" data-field="coreTotal" data-where="country=cn">—</b></p>
+        <div class="cyc-pstages"><div class="cyc-pst"><span class="cyc-pst-k">信贷扩张</span><span class="cyc-dots" data-draw="vdots" data-country="cn" data-stage="1" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="cn" data-stage="1" data-source="dtemp" data-field="temp" data-where="key=cn-1">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">不当投资</span><span class="cyc-dots" data-draw="vdots" data-country="cn" data-stage="2" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="cn" data-stage="2" data-source="dtemp" data-field="temp" data-where="key=cn-2">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">拐点信号</span><span class="cyc-dots" data-draw="vdots" data-country="cn" data-stage="3" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="cn" data-stage="3" data-source="dtemp" data-field="temp" data-where="key=cn-3">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">实体经济</span><span class="cyc-dots" data-draw="vdots" data-country="cn" data-stage="4" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="cn" data-stage="4" data-source="dtemp" data-field="temp" data-where="key=cn-4">—</b>°</span></div><div class="cyc-pst"><span class="cyc-pst-k">通胀</span><span class="cyc-dots" data-draw="vdots" data-country="cn" data-stage="5" data-source="dstatus"></span><span class="cyc-pst-t"><b data-draw="tv" data-country="cn" data-stage="5" data-source="dtemp" data-field="temp" data-where="key=cn-5">—</b>°</span></div></div>
+        <div class="cyc-interp">
+          <span class="cyc-eyebrow">Claude 的解读 · <span data-draw="pphase" data-country="cn" data-source="country_view" data-field="phase" data-where="country=cn">—</span></span>
+          <p class="cyc-csum" data-draw="psum" data-country="cn" data-source="country_view" data-field="summary" data-where="country=cn">—</p>
+          <button class="cyc-link" type="button" data-detail="cn">逐项细看中国 →</button>
+        </div>
+      </article>
+    </div>
+    <p class="cyc-note">周期温度（0—100°）衡量偏离常态的程度：每项指标正常记 0 度、警惕 50 度、危险 100 度，先在每个阶段内平均，再把五个阶段等权平均，所以各国指标数量不同不会影响总温度。25° 以下为正常，25—50° 偏高，50° 以上为高。温度只说明信号有多强，方向要看热度落在哪个阶段：信贷扩张和不当投资偏热是繁荣，拐点和实体经济偏热是收缩。</p>
+    <p class="cyc-note">判断规则（四国相同）：核心触发器有 3 项以上越过触发线，或实体经济组有 2 项以上危险，为“收缩”；有 1 项以上核心触发器越过，或拐点组有 2 项以上危险，为“拐点”；信贷扩张组有 3 项以上亮灯，为“繁荣后期”；拐点组有 3 项以上亮灯，为“收紧中”；其余为“平稳”。核心触发器是每国都有的 5 项：股市较一年内高点、10 年期国债收益率一年变化、失业率一年变化、制造业 PMI、OECD 领先指标。</p>
+  </section>
+
+  <section class="cyc-sec" id="peers">
+    <div class="cyc-sec-h">
+      <span class="cyc-eyebrow">横向对比</span>
+      <h2>共同指标对比</h2>
+      <p>12 项四国都有的指标，用同一套阈值并排放在一起。</p>
+    </div>
+    <div class="cyc-tw-wrap">
+      <table class="cyc-tw cyc-mx" aria-label="四国共同指标对比">
+        <thead><tr><th>指标与阈值</th><th>美国</th><th>英国</th><th>日本</th><th>中国</th></tr></thead>
+        <tbody data-draw="matrix"></tbody>
+      </table>
+    </div>
+    <p class="cyc-note">“偏离”类指标以常态为中心：房价以 2% 为常态，CPI 以 2% 为目标，涨太多和跌太多都算异常。</p>
+    <details class="cyc-srcs" id="peer-sources">
+      <summary>每个数字的来源与说明</summary>
+      <ul data-draw="psources"></ul>
+    </details>
+  </section>
+
+  <section class="cyc-sec" id="detail">
+    <div class="cyc-sec-h">
+      <span class="cyc-eyebrow">逐项细看</span>
+      <h2>逐项细看：<span data-draw="dname">—</span></h2>
+      <p>每个国家都按同样的五个部分展开：信贷扩张、不当投资、拐点信号、实体经济、通胀。指标的多少取决于各国能拿到的数据。</p>
+    </div>
+    <div class="cyc-tabs" role="tablist" aria-label="选择国家">
+      <button class="cyc-tab" type="button" role="tab" data-cc="us" aria-selected="true">美国</button>
+      <button class="cyc-tab" type="button" role="tab" data-cc="uk" aria-selected="false">英国</button>
+      <button class="cyc-tab" type="button" role="tab" data-cc="jp" aria-selected="false">日本</button>
+      <button class="cyc-tab" type="button" role="tab" data-cc="cn" aria-selected="false">中国</button>
+    </div>
+
+    <nav class="cyc-strip" aria-label="周期阶段">
+      <button class="cyc-step" type="button" data-go="stage-1"><span class="cyc-step-k">阶段 1</span><span class="cyc-step-t">信贷扩张</span><span class="cyc-dots" data-draw="dots" data-stage="1" data-source="dstatus"></span><span class="cyc-step-c" data-draw="sc" data-stage="1"></span></button>
+      <button class="cyc-step" type="button" data-go="stage-2"><span class="cyc-step-k">阶段 2</span><span class="cyc-step-t">不当投资</span><span class="cyc-dots" data-draw="dots" data-stage="2" data-source="dstatus"></span><span class="cyc-step-c" data-draw="sc" data-stage="2"></span></button>
+      <button class="cyc-step" type="button" data-go="stage-3"><span class="cyc-step-k">阶段 3</span><span class="cyc-step-t">拐点信号</span><span class="cyc-dots" data-draw="dots" data-stage="3" data-source="dstatus"></span><span class="cyc-step-c" data-draw="sc" data-stage="3"></span></button>
+      <button class="cyc-step" type="button" data-go="stage-4"><span class="cyc-step-k">阶段 4</span><span class="cyc-step-t">实体经济</span><span class="cyc-dots" data-draw="dots" data-stage="4" data-source="dstatus"></span><span class="cyc-step-c" data-draw="sc" data-stage="4"></span></button>
+      <button class="cyc-step cyc-step-ctx" type="button" data-go="stage-5"><span class="cyc-step-k">背景</span><span class="cyc-step-t">通胀压力</span><span class="cyc-dots" data-draw="dots" data-stage="5" data-source="dstatus"></span><span class="cyc-step-c" data-draw="sc" data-stage="5"></span></button>
+    </nav>
+
+    <div class="cyc-block" id="tripwires">
+      <h3>衰退触发器</h3>
+      <p>核心触发器四国相同，用于上面的阶段判断；美国另有 4 项数据更细的专用触发器。“距离触发”是当前值离触发线还有多远，负数表示已经越过。</p>
+      <div class="cyc-tw-wrap">
+        <table class="cyc-tw" data-source="dtrip" data-row-key="key" aria-label="衰退触发器">
+          <thead><tr><th data-field="name">触发器</th><th class="cyc-num" data-field="value">当前</th><th class="cyc-num" data-field="line">触发线</th><th class="cyc-num" data-field="distance">距离触发</th><th data-field="kind">类别</th><th data-field="label">状态</th></tr></thead>
+          <tbody data-draw="tripwires"></tbody>
+        </table>
+      </div>
+      <p class="cyc-note">还需要自己判断：央行下一次议息会议的决定，以及资产价格下跌是否开始引发违约。</p>
+    </div>
+
+    <div class="cyc-block" id="stage-1">
+      <span class="cyc-eyebrow">阶段 1 · 病因</span>
+      <h3>信贷扩张：繁荣的燃料</h3>
+      <p>罗斯巴德认为，央行和银行凭空扩张信贷、把利率压到储蓄能支撑的水平以下，是繁荣的起点。这一组亮红代表燃料很足，并不代表衰退已经开始。</p>
+      <div class="cyc-grid" data-draw="cards" data-stage="1"></div>
+    </div>
+    <div class="cyc-block" id="stage-2">
+      <span class="cyc-eyebrow">阶段 2 · 病灶</span>
+      <h3>不当投资：钱流向了哪里</h3>
+      <p>廉价信贷把资金引向离消费者最远的“高级财货”，推高股票、地产这些资本的价格，也留下债务。看这一组时要问：泡沫在哪里，债务有多重。</p>
+      <div class="cyc-grid" data-draw="cards" data-stage="2"></div>
+    </div>
+    <div class="cyc-block" id="stage-3">
+      <span class="cyc-eyebrow">阶段 3 · 拐点</span>
+      <h3>拐点信号：信贷扩张是否停止</h3>
+      <p>书中原话是“当银行信贷扩张停止，繁荣也随之停止”。加息、长端利率上行、股市下跌、银行惜贷，都是让扩张停下来的力量。</p>
+      <div class="cyc-grid" data-draw="cards" data-stage="3"></div>
+    </div>
+    <div class="cyc-block" id="stage-4">
+      <span class="cyc-eyebrow">阶段 4 · 调整</span>
+      <h3>实体经济：衰退是否开始</h3>
+      <p>不当投资被清算时，资本品行业和就业最先受冲击。这一组也是主流经济学的交叉验证，避免只凭一种理论下结论。</p>
+      <div class="cyc-grid" data-draw="cards" data-stage="4"></div>
+    </div>
+    <div class="cyc-block" id="stage-5">
+      <span class="cyc-eyebrow">背景</span>
+      <h3>通胀压力</h3>
+      <p>通胀太高会逼央行加息、戳破泡沫；太低则是债务通缩的信号，正是 1930 年代的样子。</p>
+      <div class="cyc-grid" data-draw="cards" data-stage="5"></div>
+    </div>
+  </section>
+
+  <section class="cyc-sec" id="era">
+    <div class="cyc-sec-h">
+      <span class="cyc-eyebrow">历史对照</span>
+      <h2>与 1929—1933 年对比</h2>
+      <p>书中写的那场萧条发生在美国，从高点到谷底有多深，以及今天的美国在哪些方面像、哪些方面不像。<b data-draw="era-total" data-source="eraCount" data-field="total" data-row="0">—</b> 个维度里有 <b data-draw="era-sim" data-source="eraCount" data-field="similar" data-row="0">—</b> 个和 1929 年相似，集中在繁荣期的信贷、杠杆、加息和关税；不同的那些，决定了今天更难重演 1930 年代式的通缩。中国眼下的债务通缩形态，反而在物价和资产价格上更接近当年。</p>
+    </div>
+    <div class="cyc-tiles" id="era-tiles">
+      <div class="cyc-tile"><span class="cyc-tile-k">道琼斯指数，高点到谷底</span><span class="cyc-tile-v" data-draw="drop" data-series="djia" data-k="change" data-source="drop1929" data-field="change" data-where="series=djia">—</span><span class="cyc-tile-s"><span data-draw="drop" data-series="djia" data-k="peakDate">—</span> → <span data-draw="drop" data-series="djia" data-k="troughDate">—</span></span></div>
+      <div class="cyc-tile"><span class="cyc-tile-k">工业生产，高点到谷底</span><span class="cyc-tile-v" data-draw="drop" data-series="ip" data-k="change" data-source="drop1929" data-field="change" data-where="series=ip">—</span><span class="cyc-tile-s"><span data-draw="drop" data-series="ip" data-k="peakDate">—</span> → <span data-draw="drop" data-series="ip" data-k="troughDate">—</span></span></div>
+      <div class="cyc-tile"><span class="cyc-tile-k">消费者物价，高点到谷底</span><span class="cyc-tile-v" data-draw="drop" data-series="cpi" data-k="change" data-source="drop1929" data-field="change" data-where="series=cpi">—</span><span class="cyc-tile-s"><span data-draw="drop" data-series="cpi" data-k="peakDate">—</span> → <span data-draw="drop" data-series="cpi" data-k="troughDate">—</span></span></div>
+    </div>
+    <div class="cyc-chart-card" id="era-chart">
+      <h3>1928—1934 年：股市、生产、物价（1929 年 8 月 = 100）</h3>
+      <div class="cyc-chart" data-draw="chart1929" data-source="idx1929"></div>
+    </div>
+    <div class="cyc-tw-wrap">
+      <table class="cyc-tw cyc-era" data-source="era" data-row-key="key" aria-label="与 1929—1933 年逐项对比">
+        <thead><tr><th data-field="name">维度</th><th data-field="boom">1920 年代繁荣</th><th data-field="bust">1929—1933 年</th><th data-field="now">2026 年的美国</th><th data-field="similar">是否相似</th></tr></thead>
+        <tbody data-draw="era"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="cyc-foot" id="cyc-foot">
+    <p>美国数据来自圣路易斯联储 FRED；英国、日本、中国的数据来自 OECD 和 BIS（经 FRED）以及媒体转述的官方数据；1928—1934 年历史序列来自 FRED 收录的 NBER 宏观历史数据库。CAPE、融资余额、PMI 等来自网站或研究报告，各家数字有出入。</p>
+    <p>数字是 2026 年 11 月 25 日抓取的快照，不会自动更新；全部数据文件在仓库的 data/ 目录，每行都注明了来源。警惕线和危险线是参考历史经验设定的经验阈值，不是精确的预测模型。这是经济分析框架，不构成投资建议。</p>
+    <details>
+      <summary>指标与阈值怎么读</summary>
+      <ul>
+        <li>色条和标签表示状态：正常、警惕（越过警惕线）、危险（越过危险线）。</li>
+        <li>“≥”表示数值越高越值得担心，“≤”表示越低越值得担心，“偏离”表示离常态太远都值得担心。</li>
+        <li>小图是 2024 年 6 月以来的走势，虚线是警惕线和危险线；指向小图可以看每期数值。图下注明“图为……”的，画的是相关序列的水平值，不画阈值线。</li>
+        <li>美国企业贷款数据在 2025 年初有口径断点，同比读数偏高，近 3 个月年化更可靠。</li>
+      </ul>
+    </details>
+  </footer>
+</div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="assets/data.js"></script>
+<script src="assets/dash-shim.js"></script>
+<script>
+  dash.calc('status', {
+    title: '美国指标状态',
+    description: '把美国每项指标的当前值和它的警惕线、危险线比较，得出正常、警惕或危险。',
+    inputs: ['fred', 'market'],
+    fn: (fred, market) => {
+      const rows = [];
+      for (const [src, list] of [['fred', fred], ['market', market]]) {
+        for (const r of list) {
+          const v = Number(r.value), w = Number(r.warnAt), b = Number(r.badAt);
+          const above = r.worseWhen === 'above';
+          const level = above ? (v >= b ? 2 : v >= w ? 1 : 0) : (v <= b ? 2 : v <= w ? 1 : 0);
+          rows.push({
+            key: r.key, stage: Number(r.stage), name: r.name, value: v, unit: r.unit || '', asOf: r.asOf,
+            warnAt: w, badAt: b, worseWhen: r.worseWhen, tripwire: r.tripwire || '',
+            note: r.note || '', history: r.history || '', series: r.series || r.source || '', url: r.url || '', src,
+            level, label: ['正常', '警惕', '危险'][level]
+          });
+        }
+      }
+      return rows;
+    }
+  });
+
+  dash.calc('dstatus', {
+    title: '四国逐项状态',
+    description: '美国的指标状态，加上英国、日本、中国以及美国共同指标的状态。高于、低于或偏离常态超过警惕线为警惕，超过危险线为危险。',
+    inputs: ['status', 'detail'],
+    fn: (status, detail) => {
+      const us = status.map((r) => ({
+        country: 'us', key: r.key, stage: r.stage, name: r.name, value: r.value, unit: r.unit, asOf: r.asOf,
+        warnAt: r.warnAt, badAt: r.badAt, worseWhen: r.worseWhen, center: null, tripwire: r.tripwire, note: r.note,
+        history: r.history, histSet: 'history', histUnit: '', lines: r.key !== 'ff_6m',
+        source: r.src === 'fred' ? 'FRED · ' + r.series : r.series,
+        url: r.src === 'fred' && /^[A-Z0-9]+$/.test(r.series) ? 'https://fred.stlouisfed.org/series/' + r.series : r.url,
+        src: r.src, level: r.level, label: r.label
+      }));
+      const rest = detail.map((r) => {
+        const v = Number(r.value), w = Number(r.warnAt), b = Number(r.badAt), c = Number(r.center);
+        let level;
+        if (r.worseWhen === 'above') level = v >= b ? 2 : v >= w ? 1 : 0;
+        else if (r.worseWhen === 'below') level = v <= b ? 2 : v <= w ? 1 : 0;
+        else { const d = Math.abs(v - c); level = d >= b ? 2 : d >= w ? 1 : 0; }
+        return {
+          country: r.country, key: r.key, stage: Number(r.stage), name: r.name, value: v, unit: r.unit || '', asOf: r.asOf,
+          warnAt: w, badAt: b, worseWhen: r.worseWhen, center: r.center === null || r.center === undefined ? null : c,
+          tripwire: r.tripwire || '', note: r.note || '', history: r.history || '', histSet: 'intl_history',
+          histUnit: r.histUnit === undefined ? '%' : r.histUnit, lines: r.lines !== false && r.lines !== 'false',
+          source: r.source || '', url: r.url || '', src: 'detail', level, label: ['正常', '警惕', '危险'][level]
+        };
+      });
+      return us.concat(rest);
+    }
+  });
+
+  dash.calc('dstages', {
+    title: '各国各阶段计数',
+    description: '每个国家每个阶段里处于正常、警惕、危险的指标数。',
+    inputs: ['dstatus'],
+    fn: (dstatus) => {
+      const out = [];
+      for (const country of ['us', 'uk', 'jp', 'cn']) for (const stage of [1, 2, 3, 4, 5]) {
+        const s = dstatus.filter((r) => r.country === country && r.stage === stage);
+        out.push({ key: country + '-' + stage, country, stage, ok: s.filter((r) => r.level === 0).length, warn: s.filter((r) => r.level === 1).length, bad: s.filter((r) => r.level === 2).length });
+      }
+      return out;
+    }
+  });
+
+  dash.calc('dsum', {
+    title: '各国总体计数',
+    description: '每个国家全部指标里越过危险线、警惕线的数量，以及越过触发线的核心触发器数量。',
+    inputs: ['dstatus'],
+    fn: (dstatus) => ['us', 'uk', 'jp', 'cn'].map((country) => {
+      const s = dstatus.filter((r) => r.country === country);
+      const core = s.filter((r) => r.tripwire === 'core');
+      return { country, total: s.length, bad: s.filter((r) => r.level === 2).length, warn: s.filter((r) => r.level === 1).length, ok: s.filter((r) => r.level === 0).length, tripped: core.filter((r) => r.level === 2).length, coreTotal: core.length };
+    })
+  });
+
+  dash.calc('dtrip', {
+    title: '衰退触发器',
+    description: '标为触发器的指标，以及当前值离触发线（危险线）还有多远；距离为负表示已经越过。',
+    inputs: ['dstatus'],
+    fn: (dstatus) => dstatus.filter((r) => r.tripwire === 'core' || r.tripwire === 'extra').map((r) => ({
+      key: r.key, country: r.country, name: r.name, value: r.value, unit: r.unit,
+      line: (r.worseWhen === 'above' ? '≥ ' : '≤ ') + r.badAt + (r.unit ? ' ' + r.unit : ''),
+      distance: Math.round((r.worseWhen === 'above' ? r.badAt - r.value : r.value - r.badAt) * 100) / 100,
+      kind: r.tripwire === 'core' ? '核心' : '美国专用', level: r.level, label: r.label
+    }))
+  });
+
+  dash.calc('dphase', {
+    title: '各国所处阶段',
+    description: '四国同一条规则：核心触发器 3 项以上越线或实体经济组 2 项以上危险为收缩；1 项以上核心触发器越线或拐点组 2 项以上危险为拐点；信贷扩张组 3 项以上亮灯为繁荣后期；拐点组 3 项以上亮灯为收紧中；其余为平稳。',
+    inputs: ['dstatus'],
+    fn: (dstatus) => ['us', 'uk', 'jp', 'cn'].map((country) => {
+      const s = dstatus.filter((r) => r.country === country);
+      const n = (stage, lv) => s.filter((r) => r.stage === stage && r.level === lv).length;
+      const core = s.filter((r) => r.tripwire === 'core' && r.level === 2).length;
+      let phase = 'calm';
+      if (core >= 3 || n(4, 2) >= 2) phase = 'contraction';
+      else if (core >= 1 || n(3, 2) >= 2) phase = 'turning';
+      else if (n(1, 2) + n(1, 1) >= 3) phase = 'late-boom';
+      else if (n(3, 2) + n(3, 1) >= 3) phase = 'tightening';
+      return { country, phase };
+    })
+  });
+
+  dash.calc('dtemp', {
+    title: '周期温度',
+    description: '每项指标正常记 0 度、警惕记 50 度、危险记 100 度。先求每个阶段内的平均，得到阶段温度；再把五个阶段等权平均，得到国家的周期温度。阶段等权，所以各国指标数量不同不影响总温度。',
+    inputs: ['dstatus'],
+    fn: (dstatus) => {
+      const out = [];
+      for (const country of ['us', 'uk', 'jp', 'cn']) {
+        const temps = [];
+        for (const stage of [1, 2, 3, 4, 5]) {
+          const s = dstatus.filter((r) => r.country === country && r.stage === stage);
+          const temp = s.length ? Math.round(s.reduce((a, r) => a + r.level * 50, 0) / s.length) : null;
+          if (temp !== null) temps.push(temp);
+          out.push({ key: country + '-' + stage, country, stage, temp });
+        }
+        out.push({ key: country + '-0', country, stage: 0, temp: temps.length ? Math.round(temps.reduce((a, b) => a + b, 0) / temps.length) : null });
+      }
+      return out;
+    }
+  });
+
+  dash.calc('pstatus', {
+    title: '四国共同指标状态',
+    description: '把每个国家每项共同指标的数值和同一套阈值比较：高于、低于或偏离常态超过警惕线为警惕，超过危险线为危险；没有数据为暂无。',
+    inputs: ['countries', 'metrics'],
+    fn: (countries, metrics) => countries.map((r) => {
+      const m = metrics.find((x) => x.metric === r.metric) || {};
+      const has = r.value !== null && r.value !== undefined && r.value !== '';
+      const v = Number(r.value), w = Number(m.warnAt), b = Number(m.badAt);
+      let level = -1;
+      if (has) {
+        if (m.rule === 'above') level = v >= b ? 2 : v >= w ? 1 : 0;
+        else if (m.rule === 'below') level = v <= b ? 2 : v <= w ? 1 : 0;
+        else { const d = Math.abs(v - Number(m.center)); level = d >= b ? 2 : d >= w ? 1 : 0; }
+      }
+      return { key: r.key, country: r.country, metric: r.metric, stage: Number(m.stage), name: m.name, unit: m.unit || '', value: has ? v : null, asOf: r.asOf, source: r.source || '', url: r.url || '', note: r.note || '', level, label: level < 0 ? '暂无' : ['正常', '警惕', '危险'][level] };
+    })
+  });
+
+  dash.calc('eraCount', {
+    title: '与 1929 年相似的维度数',
+    description: '对比表中标为相似的维度数和总维度数。',
+    inputs: ['era'],
+    fn: (era) => [{ similar: era.filter((r) => r.similar === true || r.similar === 'true').length, total: era.length }]
+  });
+
+  dash.calc('idx1929', {
+    title: '1928—1934 年指数',
+    description: '道琼斯、工业生产、消费者物价各自以 1929 年 8 月为 100 重新计算。',
+    inputs: ['h1929'],
+    fn: (h1929) => {
+      const base = {};
+      for (const r of h1929) if (r.date === '1929-08') base[r.series] = Number(r.value);
+      return h1929.map((r) => ({ series: r.series, date: r.date, index: Math.round((Number(r.value) / base[r.series]) * 1000) / 10 }));
+    }
+  });
+
+  dash.calc('drop1929', {
+    title: '1929—1933 年高点到谷底',
+    description: '每条序列在 1930 年以前的最高月份，到其后直至 1933 年底的最低月份，跌了多少。',
+    inputs: ['h1929'],
+    fn: (h1929) => ['djia', 'ip', 'cpi'].map((series) => {
+      const rows = h1929.filter((r) => r.series === series);
+      const peak = rows.filter((r) => r.date < '1930-01').reduce((a, b) => (Number(b.value) >= Number(a.value) ? b : a));
+      const trough = rows.filter((r) => r.date > peak.date && r.date <= '1933-12').reduce((a, b) => (Number(b.value) < Number(a.value) ? b : a));
+      return { series, peakDate: peak.date, peak: Number(peak.value), troughDate: trough.date, trough: Number(trough.value), change: Math.round((Number(trough.value) / Number(peak.value) - 1) * 1000) / 10 };
+    })
+  });
+
+  window.cycCountryName = { us: '美国', uk: '英国', jp: '日本', cn: '中国' };
+  window.cycStageName = { 1: '信贷扩张', 2: '不当投资', 3: '拐点信号', 4: '实体经济', 5: '通胀' };
+  window.cycHistUnit = { claims: ' 千人', fedfunds: '%', nfci: '', sentiment: '', sahm: ' pp', t10y3m: ' pp' };
+  window.cycDetail = 'us';
+  window.cycDetailDraws = ['dname', 'dots', 'sc', 'tripwires', 'cards'];
+
+  window.cycSelect = (cc) => {
+    if (!cycCountryName[cc]) return;
+    window.cycDetail = cc;
+    for (const t of document.querySelectorAll('.cyc-tab')) t.setAttribute('aria-selected', t.getAttribute('data-cc') === cc ? 'true' : 'false');
+    for (const name of cycDetailDraws) dash.draw(name);
+  };
+
+  for (const t of document.querySelectorAll('.cyc-tab')) {
+    t.addEventListener('click', () => cycSelect(t.getAttribute('data-cc')));
+  }
+  for (const b of document.querySelectorAll('[data-detail]')) {
+    b.addEventListener('click', () => {
+      cycSelect(b.getAttribute('data-detail'));
+      const target = document.getElementById('detail');
+      if (target) target.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    });
+  }
+  for (const btn of document.querySelectorAll('[data-go]')) {
+    btn.addEventListener('click', () => {
+      const target = document.getElementById(btn.getAttribute('data-go'));
+      if (target) target.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    });
+  }
+
+  window.cycMark = (el, source, field, where) => {
+    el.setAttribute('data-source', source); el.setAttribute('data-field', field); el.setAttribute('data-where', where);
+    return el;
+  };
+  window.cycLink = (parent, url, text) => {
+    if (/^https?:\/\//.test(url || '')) {
+      const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = text; parent.appendChild(a);
+    } else parent.appendChild(document.createTextNode(text));
+  };
+</script>
+
+<script>
+  dash.draw('vphase', (el) => {
+    const p = dash.data('dphase');
+    const c = el.getAttribute('data-country');
+    const row = p.status === 'ok' ? p.data.find((r) => r.country === c) : null;
+    for (const s of document.querySelectorAll('[data-vc="' + c + '"]')) s.hidden = !row || s.getAttribute('data-phase') !== row.phase;
+  });
+
+  dash.draw('vs', (el) => {
+    const s = dash.data('dsum');
+    const row = s.status === 'ok' ? s.data.find((r) => r.country === el.getAttribute('data-country')) : null;
+    el.textContent = row ? String(row[el.getAttribute('data-k')]) : '—';
+  });
+
+  window.cycTempRow = (country, stage) => {
+    const t = dash.data('dtemp');
+    return t.status === 'ok' ? t.data.find((r) => r.country === country && r.stage === stage) : null;
+  };
+  window.cycTempBand = (v) => (v === null || v === undefined ? 'cyc-lvna' : v >= 50 ? 'cyc-lv2' : v >= 25 ? 'cyc-lv1' : 'cyc-lv0');
+
+  dash.draw('tv', (el) => {
+    const row = cycTempRow(el.getAttribute('data-country'), Number(el.getAttribute('data-stage') || 0));
+    el.textContent = row && row.temp !== null ? String(row.temp) : '—';
+  });
+
+  dash.draw('tbar', (el) => {
+    const row = cycTempRow(el.getAttribute('data-country'), 0);
+    el.replaceChildren();
+    if (!row || row.temp === null) return;
+    const fill = document.createElement('div');
+    fill.className = 'cyc-thermo-fill ' + cycTempBand(row.temp);
+    fill.style.width = Math.max(2, Math.min(100, row.temp)) + '%';
+    el.appendChild(fill);
+  });
+
+  dash.draw('vdots', (el) => {
+    const s = dash.data('dstatus');
+    el.replaceChildren();
+    if (s.status !== 'ok') return;
+    const c = el.getAttribute('data-country'), st = Number(el.getAttribute('data-stage'));
+    for (const r of s.data.filter((x) => x.country === c && x.stage === st)) {
+      const d = document.createElement('span');
+      d.className = 'cyc-dot cyc-lv' + r.level;
+      d.setAttribute('aria-label', r.name + '：' + r.label);
+      el.appendChild(d);
+    }
+  });
+
+  dash.draw('pphase', (el) => {
+    const v = dash.data('country_view');
+    const row = v.status === 'ok' ? v.data.find((r) => r.country === el.getAttribute('data-country')) : null;
+    el.textContent = row ? row.phase : '—';
+  });
+
+  dash.draw('psum', (el) => {
+    const v = dash.data('country_view');
+    const row = v.status === 'ok' ? v.data.find((r) => r.country === el.getAttribute('data-country')) : null;
+    el.textContent = row ? row.summary : '—';
+  });
+
+  window.cycRuleText = (m) => {
+    if (m.rule === 'away') return '偏离 ' + m.center + ' 超过 ' + m.warnAt + ' 警惕 · 超过 ' + m.badAt + ' 危险';
+    const sym = m.rule === 'above' ? '≥' : '≤';
+    return '警惕 ' + sym + ' ' + m.warnAt + ' · 危险 ' + sym + ' ' + m.badAt;
+  };
+
+  dash.draw('matrix', (tb) => {
+    const s = dash.data('pstatus'), md = dash.data('metrics');
+    tb.replaceChildren();
+    if (s.status === 'error' || md.status === 'error') { const tr = tb.insertRow(); const td = tr.insertCell(); td.colSpan = 5; td.className = 'cyc-fail'; td.textContent = '共同指标对比表没有加载出来。'; return; }
+    if (s.status !== 'ok' || md.status !== 'ok') return;
+    for (const [stage, sname] of Object.entries(cycStageName)) {
+      const ms = md.data.filter((m) => Number(m.stage) === Number(stage));
+      if (!ms.length) continue;
+      const g = tb.insertRow(); g.className = 'cyc-mx-g'; const gc = g.insertCell(); gc.colSpan = 5; gc.textContent = sname;
+      for (const m of ms) {
+        const tr = tb.insertRow();
+        tr.id = 'mx-' + m.metric;
+        const th = tr.insertCell();
+        const nm = document.createElement('span'); nm.className = 'cyc-mx-name'; nm.textContent = m.name + (m.unit ? '（' + m.unit + '）' : '');
+        const rl = document.createElement('span'); rl.className = 'cyc-mx-rule'; rl.textContent = cycRuleText(m);
+        const ex = document.createElement('span'); ex.className = 'cyc-mx-rule'; ex.textContent = m.explain || '';
+        th.append(nm, rl, ex);
+        for (const c of ['us', 'uk', 'jp', 'cn']) {
+          const td = tr.insertCell();
+          const r = s.data.find((x) => x.country === c && x.metric === m.metric);
+          const cell = document.createElement('div');
+          cell.className = 'cyc-mx-cell ' + (!r || r.level < 0 ? 'cyc-lvna' : 'cyc-lv' + r.level);
+          const top = document.createElement('div'); top.className = 'cyc-mx-top';
+          const v = document.createElement('span'); v.className = 'cyc-mx-v';
+          if (r && r.value !== null) {
+            const num = cycMark(document.createElement('span'), 'countries', 'value', 'key=' + encodeURIComponent(r.key));
+            num.textContent = String(r.value);
+            v.append(num, document.createTextNode(m.unit ? ' ' + m.unit : ''));
+          } else v.textContent = '—';
+          const pill = document.createElement('span'); pill.className = 'cyc-pill'; pill.textContent = r ? r.label : '暂无';
+          if (r) cycMark(pill, 'pstatus', 'label', 'key=' + encodeURIComponent(r.key));
+          top.append(v, pill);
+          const dt = document.createElement('span'); dt.className = 'cyc-mx-d'; dt.textContent = r ? r.asOf : '';
+          cell.append(top, dt);
+          td.appendChild(cell);
+        }
+      }
+    }
+  });
+
+  dash.draw('psources', (ul) => {
+    const s = dash.data('pstatus');
+    ul.replaceChildren();
+    if (s.status !== 'ok') return;
+    const order = { us: 0, uk: 1, jp: 2, cn: 3 };
+    const rows = [...s.data].sort((a, b) => order[a.country] - order[b.country] || a.stage - b.stage);
+    for (const r of rows) {
+      const li = document.createElement('li');
+      li.appendChild(document.createTextNode(cycCountryName[r.country] + ' · ' + r.name + '（' + r.asOf + '）：'));
+      cycLink(li, r.url, r.source);
+      if (r.note) li.appendChild(document.createTextNode('。' + r.note));
+      ul.appendChild(li);
+    }
+  });
+</script>
+
+<script>
+  dash.draw('dname', (el) => { el.textContent = cycCountryName[cycDetail]; });
+
+  dash.draw('dots', (el) => {
+    const s = dash.data('dstatus');
+    const stage = Number(el.getAttribute('data-stage'));
+    el.replaceChildren();
+    if (s.status !== 'ok') return;
+    for (const r of s.data.filter((x) => x.country === cycDetail && x.stage === stage)) {
+      const d = document.createElement('span');
+      d.className = 'cyc-dot cyc-lv' + r.level;
+      d.setAttribute('aria-label', r.name + '：' + r.label);
+      el.appendChild(d);
+    }
+  });
+
+  dash.draw('sc', (el) => {
+    const s = dash.data('dstages');
+    const stage = Number(el.getAttribute('data-stage'));
+    el.replaceChildren();
+    const row = s.status === 'ok' ? s.data.find((r) => r.country === cycDetail && r.stage === stage) : null;
+    if (!row) { el.textContent = '—'; return; }
+    const where = 'key=' + encodeURIComponent(row.key);
+    const b = cycMark(document.createElement('span'), 'dstages', 'bad', where); b.textContent = String(row.bad);
+    const w = cycMark(document.createElement('span'), 'dstages', 'warn', where); w.textContent = String(row.warn);
+    el.append('危险 ', b, ' · 警惕 ', w);
+    const tr = cycTempRow(cycDetail, stage);
+    if (tr && tr.temp !== null) {
+      const t = cycMark(document.createElement('b'), 'dtemp', 'temp', 'key=' + encodeURIComponent(tr.key));
+      t.textContent = String(tr.temp);
+      el.append(' · 温度 ', t, '°');
+    }
+  });
+
+  dash.draw('tripwires', (tb) => {
+    const t = dash.data('dtrip');
+    tb.replaceChildren();
+    if (t.status === 'error') { const tr = tb.insertRow(); const td = tr.insertCell(); td.colSpan = 6; td.className = 'cyc-fail'; td.textContent = '触发器数据没有加载出来。'; return; }
+    if (t.status !== 'ok') return;
+    const rows = t.data.filter((r) => r.country === cycDetail).sort((a, b) => (a.kind === b.kind ? 0 : a.kind === '核心' ? -1 : 1) || b.level - a.level);
+    for (const r of rows) {
+      const tr = tb.insertRow();
+      tr.setAttribute('data-key', encodeURIComponent(r.key));
+      tr.className = 'cyc-lv' + r.level;
+      tr.insertCell().textContent = r.name;
+      const v = tr.insertCell(); v.className = 'cyc-num'; v.textContent = r.value + (r.unit ? ' ' + r.unit : '');
+      const l = tr.insertCell(); l.className = 'cyc-num'; l.textContent = r.line;
+      const d = tr.insertCell(); d.className = 'cyc-num'; d.textContent = String(r.distance);
+      tr.insertCell().textContent = r.kind;
+      const st = tr.insertCell(); const pill = document.createElement('span'); pill.className = 'cyc-pill'; pill.textContent = r.label; st.appendChild(pill);
+    }
+  });
+
+  window.cycSpark = (box, series, row, unit, first) => {
+    const w = box.clientWidth || 240, h = 56, padY = 6;
+    const parse = d3.utcParse('%Y-%m');
+    const fmtD = d3.utcFormat('%Y-%m');
+    const pts = series.map((d) => ({ date: parse(d.date), value: Number(d.value) })).filter((d) => d.date && !Number.isNaN(d.value));
+    if (!pts.length) return;
+    let refs = [];
+    if (row.lines) {
+      if (row.worseWhen === 'away') refs = [[row.center - row.warnAt, 'var(--color-warn)'], [row.center + row.warnAt, 'var(--color-warn)'], [row.center - row.badAt, 'var(--color-bad)'], [row.center + row.badAt, 'var(--color-bad)']];
+      else refs = [[row.warnAt, 'var(--color-warn)'], [row.badAt, 'var(--color-bad)']];
+    }
+    const vals = pts.map((d) => d.value).concat(refs.map((r) => r[0]));
+    const x = d3.scaleUtc().domain(d3.extent(pts, (d) => d.date)).range([2, w - 2]);
+    const y = d3.scaleLinear().domain(d3.extent(vals)).nice().range([h - padY, padY]);
+    const svg = d3.select(box).append('svg').attr('viewBox', `0 0 ${w} ${h}`).attr('preserveAspectRatio', 'none')
+      .attr('role', 'img').attr('aria-label', row.name + '：' + fmtD(pts[0].date) + ' 到 ' + fmtD(pts[pts.length - 1].date) + ' 的走势');
+    for (const [val, color] of refs) {
+      svg.append('line').attr('x1', 0).attr('x2', w).attr('y1', y(val)).attr('y2', y(val))
+        .style('stroke', color).style('stroke-width', 1).style('stroke-dasharray', '3 3').style('opacity', 0.8).attr('vector-effect', 'non-scaling-stroke');
+    }
+    const area = d3.area().x((d) => x(d.date)).y0(h - padY).y1((d) => y(d.value));
+    const line = d3.line().x((d) => x(d.date)).y((d) => y(d.value));
+    svg.append('path').datum(pts).attr('d', area).style('fill', dash.colors[0]).style('opacity', 0.08);
+    const path = svg.append('path').datum(pts).attr('d', line).style('fill', 'none').style('stroke', dash.colors[0]).style('stroke-width', 1.6).attr('vector-effect', 'non-scaling-stroke');
+    const last = pts[pts.length - 1];
+    svg.append('circle').attr('cx', x(last.date)).attr('cy', y(last.value)).attr('r', 3).style('fill', dash.colors[0]);
+    const hover = svg.append('circle').attr('r', 3).style('fill', 'var(--color-bg)').style('stroke', dash.colors[0]).style('stroke-width', 1.5).style('display', 'none');
+    if (first && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+      const len = path.node().getTotalLength ? path.node().getTotalLength() : 0;
+      if (len) path.attr('stroke-dasharray', len + ' ' + len).attr('stroke-dashoffset', len).transition().duration(700).ease(d3.easeCubicOut).attr('stroke-dashoffset', 0).on('end', () => path.attr('stroke-dasharray', null));
+    }
+    const ax = document.createElement('div'); ax.className = 'cyc-spark-ax';
+    const a1 = document.createElement('span'); a1.textContent = fmtD(pts[0].date);
+    const a2 = document.createElement('span'); a2.textContent = fmtD(last.date);
+    ax.append(a1, a2); box.appendChild(ax);
+    const tip = document.createElement('div'); tip.className = 'cyc-tip'; tip.hidden = true; box.appendChild(tip);
+    const bis = d3.bisector((d) => d.date).center;
+    const node = svg.node();
+    const move = (ev) => {
+      const r = node.getBoundingClientRect();
+      const px = (ev.clientX - r.left) * (w / r.width);
+      const d = pts[bis(pts, x.invert(px))];
+      if (!d) return;
+      hover.style('display', null).attr('cx', x(d.date)).attr('cy', y(d.value));
+      tip.hidden = false;
+      tip.textContent = fmtD(d.date) + ' · ' + d.value + unit;
+      tip.style.left = Math.max(40, Math.min(box.clientWidth - 40, x(d.date) * (r.width / w))) + 'px';
+    };
+    node.addEventListener('pointermove', move);
+    node.addEventListener('pointerdown', move);
+    node.addEventListener('pointerleave', () => { tip.hidden = true; hover.style('display', 'none'); });
+  };
+
+  dash.draw('cards', (el) => {
+    const s = dash.data('dstatus');
+    const stage = Number(el.getAttribute('data-stage'));
+    if (s.status === 'loading') return;
+    el.classList.remove('dash-skeleton');
+    el.replaceChildren();
+    if (s.status !== 'ok') {
+      if (s.status === 'error') { const p = document.createElement('p'); p.className = 'cyc-fail'; p.textContent = '这一组指标没有加载出来。'; el.appendChild(p); }
+      return;
+    }
+    const hUs = dash.data('history'), hIntl = dash.data('intl_history');
+    const hist = { history: hUs.status === 'ok' ? hUs.data : [], intl_history: hIntl.status === 'ok' ? hIntl.data : [] };
+    const first = el.dataset.drawn !== cycDetail;
+    for (const r of s.data.filter((x) => x.country === cycDetail && x.stage === stage)) {
+      const card = document.createElement('article');
+      card.className = 'cyc-card cyc-lv' + r.level;
+      card.id = 'ind-' + r.key;
+      const where = 'key=' + encodeURIComponent(r.key);
+
+      const top = document.createElement('div'); top.className = 'cyc-card-top';
+      const name = document.createElement('h4'); name.className = 'cyc-card-name'; name.style.margin = '0'; name.textContent = r.name;
+      const pill = cycMark(document.createElement('span'), 'dstatus', 'label', where); pill.className = 'cyc-pill'; pill.textContent = r.label;
+      top.append(name, pill);
+
+      const valRow = document.createElement('div'); valRow.className = 'cyc-card-val';
+      const big = cycMark(document.createElement('span'), r.src, 'value', where); big.className = 'cyc-big'; big.textContent = String(r.value);
+      const unit = document.createElement('span'); unit.className = 'cyc-unit'; unit.textContent = r.unit;
+      const asof = cycMark(document.createElement('span'), r.src, 'asOf', where); asof.className = 'cyc-asof'; asof.textContent = r.asOf;
+      valRow.append(big, unit, asof);
+
+      const line = document.createElement('p'); line.className = 'cyc-line';
+      if (r.worseWhen === 'away') line.textContent = '偏离 ' + r.center + ' 超过 ' + r.warnAt + ' 警惕 · 超过 ' + r.badAt + ' 危险';
+      else { const sym = r.worseWhen === 'above' ? '≥' : '≤'; line.textContent = '警惕 ' + sym + ' ' + r.warnAt + ' · 危险 ' + sym + ' ' + r.badAt; }
+      card.append(top, valRow, line);
+      if (r.note) { const n = document.createElement('p'); n.className = 'cyc-line'; n.style.lineHeight = '1.5'; n.textContent = r.note; card.appendChild(n); }
+
+      const series = r.history ? hist[r.histSet].filter((d) => d.series === r.history) : [];
+      el.appendChild(card);
+      if (series.length) {
+        const box = document.createElement('div'); box.className = 'cyc-spark';
+        box.setAttribute('data-source', r.histSet);
+        card.appendChild(box);
+        const u = r.histSet === 'history' ? (r.history in cycHistUnit ? cycHistUnit[r.history] : '%') : r.histUnit;
+        cycSpark(box, series, r, u, first);
+      }
+      const code = document.createElement('p'); code.className = 'cyc-code';
+      cycLink(code, r.url, r.source);
+      card.appendChild(code);
+    }
+    if (hist.history.length || hist.intl_history.length) el.dataset.drawn = cycDetail;
+  });
+</script>
+
+<script>
+  for (const [name, field] of [['era-sim', 'similar'], ['era-total', 'total']]) {
+    dash.draw(name, (el) => {
+      const s = dash.data('eraCount');
+      el.textContent = s.status === 'ok' && s.data.length ? String(s.data[0][field]) : '—';
+    });
+  }
+
+  dash.draw('drop', (el) => {
+    const d = dash.data('drop1929');
+    const row = d.status === 'ok' ? d.data.find((r) => r.series === el.getAttribute('data-series')) : null;
+    if (!row) { el.textContent = '—'; return; }
+    const k = el.getAttribute('data-k');
+    el.textContent = k === 'change' ? row.change + '%' : row[k];
+  });
+
+  dash.draw('era', (tb) => {
+    const e = dash.data('era');
+    tb.replaceChildren();
+    if (e.status === 'error') { const tr = tb.insertRow(); const td = tr.insertCell(); td.colSpan = 5; td.className = 'cyc-fail'; td.textContent = '对比表没有加载出来。'; return; }
+    if (e.status !== 'ok') return;
+    for (const r of e.data) {
+      const tr = tb.insertRow();
+      tr.setAttribute('data-key', encodeURIComponent(r.key));
+      const same = r.similar === true || r.similar === 'true';
+      tr.className = same ? 'cyc-lv1' : 'cyc-lv0';
+      const n = tr.insertCell(); n.textContent = r.name;
+      const src = document.createElement('span'); src.className = 'cyc-src'; src.textContent = r.source || ''; n.appendChild(src);
+      tr.insertCell().textContent = r.boom;
+      tr.insertCell().textContent = r.bust;
+      tr.insertCell().textContent = r.now;
+      const c = tr.insertCell(); const pill = document.createElement('span'); pill.className = 'cyc-pill'; pill.textContent = same ? '相似' : '不同'; c.appendChild(pill);
+    }
+  });
+
+  window.cycSeriesName = { djia: '道琼斯工业指数', ip: '工业生产', cpi: '消费者物价' };
+
+  dash.draw('chart1929', (el) => {
+    const d = dash.data('idx1929');
+    el.replaceChildren();
+    if (d.status === 'error') { const p = document.createElement('p'); p.className = 'cyc-fail'; p.textContent = '历史走势没有加载出来。'; el.appendChild(p); return; }
+    if (d.status !== 'ok' || !d.data.length) return;
+    const parse = d3.utcParse('%Y-%m');
+    const fmt = d3.utcFormat('%Y-%m');
+    const series = ['djia', 'ip', 'cpi'].map((k, i) => ({ k, color: dash.colors[i % dash.colors.length], pts: d.data.filter((r) => r.series === k).map((r) => ({ date: parse(r.date), v: Number(r.index) })).filter((p) => p.date) }));
+    const legend = document.createElement('div'); legend.className = 'cyc-legend';
+    for (const s of series) { const sp = document.createElement('span'); const i = document.createElement('i'); i.style.background = s.color; sp.append(i, document.createTextNode(cycSeriesName[s.k])); legend.appendChild(sp); }
+    el.appendChild(legend);
+    const W = Math.max(280, el.clientWidth), H = 250, m = { t: 12, r: 12, b: 26, l: 36 };
+    const all = series.flatMap((s) => s.pts);
+    const x = d3.scaleUtc().domain(d3.extent(all, (p) => p.date)).range([m.l, W - m.r]);
+    const y = d3.scaleLinear().domain([0, d3.max(all, (p) => p.v)]).nice().range([H - m.b, m.t]);
+    const svg = d3.select(el).append('svg').attr('width', W).attr('height', H).attr('role', 'img')
+      .attr('aria-label', '1928 到 1934 年道琼斯、工业生产、消费者物价的走势，以 1929 年 8 月为 100');
+    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(W < 500 ? 4 : 7).tickFormat(d3.utcFormat('%Y')));
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5));
+    svg.append('g').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).style('stroke', 'var(--cds-chart-grid)');
+    svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(100)).attr('y2', y(100)).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '4 3');
+    const crash = parse('1929-10');
+    svg.append('line').attr('x1', x(crash)).attr('x2', x(crash)).attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '2 3');
+    svg.append('text').attr('x', x(crash) + 4).attr('y', m.t + 10).text('1929 年 10 月股灾').style('fill', 'var(--cds-text-secondary)').style('font-size', 'var(--cds-font-size-caption)');
+    const line = d3.line().x((p) => x(p.date)).y((p) => y(p.v));
+    for (const s of series) svg.append('path').datum(s.pts).attr('d', line).style('fill', 'none').style('stroke', s.color).style('stroke-width', 2);
+    const guide = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-axis)').style('display', 'none');
+    const dots = series.map((s) => svg.append('circle').attr('r', 3.5).style('fill', s.color).style('display', 'none'));
+    const tip = document.createElement('div'); tip.className = 'cyc-tip2'; tip.hidden = true; el.appendChild(tip);
+    const dates = series[0].pts.map((p) => p.date);
+    const bis = d3.bisector((dd) => dd).center;
+    const node = svg.node();
+    const move = (ev) => {
+      const r = node.getBoundingClientRect();
+      const dt = dates[bis(dates, x.invert(ev.clientX - r.left))];
+      if (!dt) return;
+      guide.style('display', null).attr('x1', x(dt)).attr('x2', x(dt));
+      tip.replaceChildren();
+      const head = document.createElement('b'); head.textContent = fmt(dt); tip.appendChild(head);
+      series.forEach((s, i) => {
+        const p = s.pts.find((q) => +q.date === +dt);
+        if (!p) { dots[i].style('display', 'none'); return; }
+        dots[i].style('display', null).attr('cx', x(dt)).attr('cy', y(p.v));
+        const row = document.createElement('span'); row.textContent = cycSeriesName[s.k] + '  ' + p.v; tip.appendChild(row);
+      });
+      tip.hidden = false;
+      tip.style.left = Math.min(x(dt) + 12, W - 170) + 'px';
+    };
+    node.addEventListener('pointermove', move);
+    node.addEventListener('pointerdown', move);
+    node.addEventListener('pointerleave', () => { tip.hidden = true; guide.style('display', 'none'); dots.forEach((c) => c.style('display', 'none')); });
+  });
+</script>
+<script>dashBoot();</script>
+</body>
+</html>

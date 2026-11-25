@@ -1,0 +1,134 @@
+[
+{
+"metric": "credit_chg",
+"stage": 1,
+"name": "私人信贷占 GDP 一年变化",
+"unit": "pp",
+"rule": "above",
+"warnAt": 3,
+"badAt": 6,
+"center": null,
+"explain": "BIS 口径；一年内上升太快代表信贷繁荣"
+},
+{
+"metric": "credit_level",
+"stage": 2,
+"name": "私人信贷占 GDP",
+"unit": "%",
+"rule": "above",
+"warnAt": 150,
+"badAt": 180,
+"center": null,
+"explain": "存量债务越高，出清时越痛"
+},
+{
+"metric": "house",
+"stage": 2,
+"name": "房价同比（名义）",
+"unit": "%",
+"rule": "away",
+"warnAt": 4,
+"badAt": 8,
+"center": 2,
+"explain": "以 2% 为常态：涨太快是泡沫，跌太多是泡沫破裂"
+},
+{
+"metric": "policy6m",
+"stage": 3,
+"name": "政策利率近 6 个月变化",
+"unit": "pp",
+"rule": "above",
+"warnAt": 0.2,
+"badAt": 0.5,
+"center": null,
+"explain": "正值代表央行在收紧"
+},
+{
+"metric": "yield1y",
+"stage": 3,
+"name": "10 年期国债收益率一年变化",
+"unit": "pp",
+"rule": "above",
+"warnAt": 0.5,
+"badAt": 1.0,
+"center": null,
+"explain": "长端利率上升抬高所有长周期项目的成本"
+},
+{
+"metric": "drawdown",
+"stage": 3,
+"name": "股市较一年内高点",
+"unit": "%",
+"rule": "below",
+"warnAt": -10,
+"badAt": -20,
+"center": null,
+"explain": "跌 10% 为调整，跌 20% 为熊市"
+},
+{
+"metric": "gdp",
+"stage": 4,
+"name": "实际 GDP 同比",
+"unit": "%",
+"rule": "below",
+"warnAt": 1,
+"badAt": 0,
+"center": null,
+"explain": "低于 0 即萎缩"
+},
+{
+"metric": "unemp1y",
+"stage": 4,
+"name": "失业率一年变化",
+"unit": "pp",
+"rule": "above",
+"warnAt": 0.3,
+"badAt": 0.5,
+"center": null,
+"explain": "类似萨姆规则：上升 0.5 pp 通常意味着衰退"
+},
+{
+"metric": "pmi",
+"stage": 4,
+"name": "制造业 PMI",
+"unit": "",
+"rule": "below",
+"warnAt": 50,
+"badAt": 48,
+"center": null,
+"explain": "低于 50 为收缩"
+},
+{
+"metric": "cli",
+"stage": 4,
+"name": "OECD 领先指标",
+"unit": "",
+"rule": "below",
+"warnAt": 99.5,
+"badAt": 99,
+"center": null,
+"explain": "低于 100 代表增长低于趋势"
+},
+{
+"metric": "cpi",
+"stage": 5,
+"name": "CPI 同比",
+"unit": "%",
+"rule": "away",
+"warnAt": 1,
+"badAt": 2,
+"center": 2,
+"explain": "以 2% 为目标：太高是通胀，太低是通缩"
+},
+{
+"metric": "ppi",
+"stage": 5,
+"name": "PPI 同比",
+"unit": "%",
+"rule": "above",
+"warnAt": 4,
+"badAt": 8,
+"center": null,
+"explain": "上游价格，领先于消费者价格"
+}
+]
